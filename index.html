@@ -2,71 +2,225 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Hệ Thống Học Tập DSA</title>
+  <title>Hệ Thống Học Tập DSA - Khoa CNTT</title>
   <style>
-    :root { --primary: #1e293b; --accent: #10a37f; --text: #f8fafc; }
-    body { margin: 0; display: flex; height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; background: #f1f5f9; }
-    #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #1e293b; display: flex; justify-content: center; align-items: center; z-index: 1000; }
-    .login-box { background: white; padding: 40px; border-radius: 20px; width: 350px; text-align: center; }
-    .login-box input { width: 100%; padding: 15px; margin: 15px 0; border: 1px solid #cbd5e1; border-radius: 10px; font-size: 1rem; text-transform: uppercase;}
-    .btn-login { width: 100%; padding: 15px; background: var(--accent); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; cursor: pointer; }
-    .login-status { margin-top: 15px; font-size: 0.9rem; color: #ef4444; }
+    :root { --primary: #1e293b; --accent: #10a37f; --accent-dark: #0e8c6c; --text: #f8fafc; --blue-class: #3b82f6; --orange-class: #f59e0b; }
+    body { margin: 0; display: flex; height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; background: #f8fafc; }
+    
+    /* ===================== LOGIN SCREEN ===================== */
+    #login-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      display: flex; justify-content: center; align-items: center; z-index: 1000;
+    }
+    .login-wrapper { text-align: center; animation: slideUp 0.5s ease; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    .login-logo {
+      width: 72px; height: 72px; background: var(--accent); border-radius: 20px;
+      display: flex; align-items: center; justify-content: center; margin: 0 auto 20px;
+      font-size: 2rem; box-shadow: 0 8px 32px rgba(16,163,127,0.4);
+    }
+    .login-title { color: #f8fafc; font-size: 1.6rem; font-weight: 700; margin: 0 0 6px; }
+    .login-sub { color: #94a3b8; font-size: 0.9rem; margin: 0 0 32px; }
+    .login-box {
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(20px); padding: 36px 40px; border-radius: 20px;
+      width: 380px; box-shadow: 0 24px 48px rgba(0,0,0,0.4);
+    }
+    .input-group { position: relative; margin-bottom: 16px; text-align: left; }
+    .input-group label { display: block; color: #94a3b8; font-size: 0.78rem; font-weight: 600; text-transform: uppercase; margin-bottom: 6px; }
+    .input-group input {
+      width: 100%; padding: 12px 16px; background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15); border-radius: 10px; color: #f8fafc;
+      font-size: 0.95rem; outline: none; transition: 0.2s; text-transform: uppercase;
+    }
+    .input-group input::placeholder { color: #64748b; text-transform: none; }
+    .input-group input:focus { border-color: var(--accent); background: rgba(255,255,255,0.12); }
+    .btn-login {
+      width: 100%; padding: 13px; background: var(--accent); color: white;
+      border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 600;
+      cursor: pointer; margin-top: 8px; transition: 0.2s; display: flex;
+      align-items: center; justify-content: center; gap: 8px;
+    }
+    .btn-login:hover:not(:disabled) { background: var(--accent-dark); transform: translateY(-1px); }
+    .btn-login:disabled { background: #334155; cursor: not-allowed; transform: none; }
+    .login-status { margin-top: 14px; font-size: 0.85rem; min-height: 22px; text-align: center; }
+    .login-status.loading { color: #94a3b8; }
+    .login-status.error   { color: #f87171; }
+    .login-status.success { color: #34d399; }
+    .spinner {
+      display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: white; border-radius: 50%; animation: spin 0.7s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ===================== GIAO DIỆN CHÍNH ===================== */
     #app-container { display: none; width: 100%; height: 100%; }
-    .sidebar { width: 20%; background: var(--primary); color: white; padding: 20px; box-sizing: border-box;}
-    .main-view { width: 80%; position: relative; }
-    .btn-logout { background: #ef4444; color: white; border: none; padding: 8px 15px; border-radius: 5px; cursor: pointer; width: 100%; margin-top: 20px;}
+    
+    .sidebar { width: 20%; background: var(--primary); color: var(--text); display: flex; flex-direction: column; box-shadow: 2px 0 5px rgba(0,0,0,0.2); z-index: 10; }
+    .sidebar h2 { font-size: 1.1rem; text-align: center; padding: 25px 10px; border-bottom: 1px solid #334155; margin: 0; color: var(--accent); }
+    
+    .user-info-box { padding: 15px; border-bottom: 1px solid #334155; text-align: center; background: rgba(0,0,0,0.1); }
+    .user-info-box p { margin: 5px 0; font-size: 0.9rem; font-weight: bold; color: white; }
+    .user-info-box span { font-size: 0.8rem; color: var(--accent); background: rgba(16,163,127,0.15); padding: 2px 8px; border-radius: 10px; }
+    .btn-logout { margin-top: 10px; background: rgba(239,68,68,0.15); color: #fca5a5; border: 1px solid rgba(239,68,68,0.3); padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 0.75rem; transition: 0.2s; width: 100%;}
+    .btn-logout:hover { background: rgba(239,68,68,0.3); }
+
+    .nav-group { padding: 15px; flex-grow: 1; overflow-y: auto; }
+    .nav-btn { width: 100%; margin: 6px 0; padding: 12px; background: #334155; color: white; border: none; cursor: pointer; text-align: left; border-radius: 8px; transition: 0.3s; font-size: 0.95rem; }
+    .nav-btn:hover { background: #475569; border-left: 4px solid var(--accent); }
+    .nav-btn.active { background: var(--accent); font-weight: bold; }
+    
+    .sub-menu { margin-left: 15px; border-left: 1px dashed #64748b; padding-left: 8px; display: none; margin-bottom: 10px; }
+    .sub-menu button { width: 100%; padding: 8px; margin: 2px 0; background: transparent; color: #cbd5e1; border: none; text-align: left; cursor: pointer; font-size: 0.85rem; display: block; }
+    .sub-menu button:hover { color: var(--accent); }
+
+    .main-view { width: 80%; position: relative; overflow-y: auto; height: 100vh; scroll-behavior: smooth; }
+    .page { display: none; padding: 40px; animation: fadeIn 0.4s; }
+    .page.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    .chapter-header { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); margin-bottom: 30px; border-left: 10px solid var(--accent); }
+    .chapter-header h2 { margin: 0; color: var(--primary); font-size: 1.8rem; }
+    
+    .content-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; margin-top: 20px; }
+    .topic-card { background: white; padding: 20px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); transition: 0.3s; }
+    .topic-card:hover { transform: translateY(-3px); box-shadow: 0 10px 20px rgba(0,0,0,0.08); }
+    .topic-card h4 { margin-top: 0; color: var(--accent); border-bottom: 1px solid #f1f5f9; padding-bottom: 10px; }
+    .topic-card p { color: #475569; font-size: 0.95rem; line-height: 1.6; }
+
+    .btn-view-pdf { display: inline-block; margin-top: 20px; padding: 12px 25px; background: var(--primary); color: white; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s; }
+    .btn-view-pdf:hover { background: var(--accent); }
+
+    .class-box { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
+    .news-card { background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.05); transition: 0.3s; }
+    .news-card.cd { border-top: 8px solid var(--blue-class); } 
+    .news-card.tc { border-top: 8px solid var(--orange-class); }
+    .btn-submit { display: block; text-align: center; padding: 15px; margin-top: 20px; border-radius: 10px; text-decoration: none; font-weight: bold; color: white; }
   </style>
 </head>
 <body>
 
 <div id="login-screen">
-  <div class="login-box">
-    <h2 style="color: var(--primary); margin-top:0;">Đăng Nhập DSA</h2>
-    <p style="color: #64748b; font-size: 0.9rem;">Chỉ cần nhập Mã Sinh Viên của bạn</p>
-    <input type="text" id="input-masv" placeholder="Ví dụ: SV01" onkeydown="if(event.key==='Enter') handleLogin()">
-    <button class="btn-login" id="login-btn" onclick="handleLogin()">Vào Lớp Học</button>
-    <div class="login-status" id="login-status"></div>
+  <div class="login-wrapper">
+    <div class="login-logo">📚</div>
+    <h1 class="login-title">DSA Learning System</h1>
+    <p class="login-sub">Cấu trúc Dữ liệu &amp; Giải thuật — Khoa CNTT</p>
+    <div class="login-box">
+      <div class="input-group">
+        <label>Mã Sinh Viên</label>
+        <input type="text" id="input-masv" placeholder="Nhập Mã SV (VD: SV01)" onkeydown="if(event.key==='Enter') handleLogin()">
+      </div>
+      <button class="btn-login" id="login-btn" onclick="handleLogin()">
+        <span id="btn-text">Vào Lớp Học</span>
+      </button>
+      <div class="login-status" id="login-status"></div>
+    </div>
   </div>
 </div>
 
 <div id="app-container">
   <div class="sidebar">
-    <h3 style="color: var(--accent); text-align: center;">KHOA CNTT</h3>
-    <div style="background: rgba(255,255,255,0.1); padding: 15px; border-radius: 10px; text-align: center; margin-top: 20px;">
-      <p id="display-name" style="margin: 0; font-weight: bold;"></p>
-      <small id="display-masv" style="color: var(--accent);"></small>
+    <h2>KHOA CNTT<br><small style="color: #94a3b8; font-size: 0.7rem;">Cấu trúc dữ liệu & Giải thuật</small></h2>
+    
+    <div class="user-info-box">
+      <p id="display-name">Sinh Viên</p>
+      <span id="display-masv">MASV</span><br>
+      <button class="btn-logout" onclick="handleLogout()">Đăng Xuất (Xóa bộ nhớ tạm)</button>
     </div>
-    <button class="btn-logout" onclick="handleLogout()">Đăng Xuất</button>
-    <p style="font-size: 0.8rem; color: #94a3b8; text-align: center; margin-top: 30px;">Hệ thống sẽ chấm điểm và lưu kết quả tự động.</p>
+
+    <div class="nav-group">
+      <button class="nav-btn active" onclick="showPage('home', this)">🏠 Trang Chủ</button>
+      <button class="nav-btn" onclick="toggleSubMenu(this)">📚 Tài Liệu Bài Học</button>
+      <div id="sub-chapters" class="sub-menu">
+        <button onclick="loadChapter(1)">Chương 1: Thiết kế & Phân tích GT</button>
+        <button onclick="loadChapter(2)">Chương 2: Kiểu dữ liệu cơ sở</button>
+        <button onclick="loadChapter(3)">Chương 3: Mảng & Danh sách</button>
+        <button onclick="loadChapter(4)">Chương 4: Cây (Tree)</button>
+        <button onclick="loadChapter(5)">Chương 5: Sắp xếp</button>
+        <button onclick="loadChapter(6)">Chương 6: Tìm kiếm</button>
+      </div>
+      <button class="nav-btn" onclick="showPage('news', this)">🔔 Nộp Bài Tập</button>
+    </div>
   </div>
-  <div class="main-view" id="coze-container">
+
+  <div class="main-view">
+    <div id="home" class="page active">
+      <div style="text-align:center; padding: 40px 0;">
+          <h1 style="font-size: 2.5rem; color: var(--primary);">DSA-Learning: Hệ Thống Học Tập Số</h1>
+          <p style="color: #64748b; font-size: 1.1rem;">Chào mừng <b id="welcome-name" style="color: var(--accent);">Sinh Viên</b> đến với hệ thống học liệu</p>
+      </div>
+      <div class="content-grid">
+          <div class="topic-card">
+              <h4>📖 Tài liệu số hóa</h4>
+              <p>Toàn bộ 6 chương giáo trình đã được tối ưu hóa hiển thị. Sinh viên có thể xem tóm tắt và tải file chi tiết.</p>
+          </div>
+          <div class="topic-card">
+              <h4>🤖 Trợ lý ảo DSA</h4>
+              <p>Bot nằm ở góc phải màn hình. Sẵn sàng chấm lỗi code và giải đáp thắc mắc về logic thuật toán.</p>
+          </div>
+      </div>
     </div>
+
+    <div id="lessons" class="page">
+      <div class="chapter-header">
+        <h2 id="ch-title">Tên Chương Học</h2>
+        <p id="ch-desc" style="color: #64748b;">Mô tả kiến thức trọng tâm.</p>
+        <a href="#" id="pdf-link" target="_blank" class="btn-view-pdf">📂 Mở giáo trình PDF chi tiết</a>
+      </div>
+      <div class="content-grid" id="ch-topics"></div>
+    </div>
+
+    <div id="news" class="page">
+      <h1 style="border-bottom: 3px solid var(--accent); display: inline-block;">Hệ Thống Nộp Bài</h1>
+      <div class="class-box" style="margin-top: 30px;">
+        <div class="news-card cd">
+          <h2 style="color: var(--blue-class);">Lớp CĐ.CNT15</h2>
+          <p>Hệ Cao Đẳng - Nộp bài thực hành hàng tuần tại Classroom.</p>
+          <a href="https://classroom.google.com/c/ODQ3NzA2MTY2Mjc2?cjc=wnxa7x6m"
+             target="_blank" class="btn-class" style="background:var(--blue-class);">VÀO CLASSROOM</a>
+        </div>
+        <div class="news-card tc">
+          <h2 style="color: var(--orange-class);">Lớp TC.CNT25</h2>
+          <p>Hệ Trung Cấp - Nộp bài thực hành hàng tuần tại Classroom.</p>
+           <a href="https://classroom.google.com/c/ODQ3NzA2MTY2Mjc2?cjc=wnxa7x6m"
+             target="_blank" class="btn-class" style="background:var(--orange-class);">VÀO CLASSROOM</a>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <script src="https://sf-cdn.coze.com/obj/unpkg-va/flow-platform/chat-app-sdk/1.2.0-beta.10/libs/oversea/index.js"></script>
+
 <script>
-// CẤU HÌNH CỦA BẠN
+// ================================================================
+// CẤU HÌNH & XỬ LÝ DỮ LIỆU TỪ SHEET
+// ================================================================
 const TARGET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR1ByzBIEU-JdWgBPtDQpGGvJGNvD2wz3vPo6sfRQgEaUYfQnsJHsXtlfbhVRG3lIXYernqYW6yJlPZ/pub?gid=0&single=true&output=csv';
 const COZE_BOT_ID = '7628115867796308021';
 const COZE_TOKEN  = 'pat_U0Oem7qh98IjsRetrG0OJd2JuThEFHP07tVaUqZxAAm9eULukTOghV09jypTGEdJ';
 
 async function fetchValidStudents() {
-  const url = TARGET_CSV_URL + '&t=' + Date.now();
+  const urlWithTime = TARGET_CSV_URL + '&t=' + Date.now();
   let text = "";
+  
   try {
-    const res = await fetch(url);
+    const res = await fetch(urlWithTime);
     if (!res.ok) throw new Error();
     text = await res.text();
   } catch (e) {
     try {
-      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+      const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(urlWithTime);
       const proxyRes = await fetch(proxyUrl);
       if (!proxyRes.ok) throw new Error();
       text = await proxyRes.text();
-    } catch (err) { return null; }
+    } catch (proxyError) { return null; }
   }
+
   const map = {};
-  text.trim().split('\n').slice(1).forEach(row => {
+  const rows = text.trim().split('\n');
+  rows.slice(1).forEach(row => {
     const cols = row.split(','); 
     if (cols.length > 0) {
       const id = cols[0].trim().replace(/"/g,'').toUpperCase();
@@ -77,67 +231,163 @@ async function fetchValidStudents() {
   return map;
 }
 
+// ================================================================
+// QUẢN LÝ ĐĂNG NHẬP 
+// ================================================================
 async function handleLogin() {
   const masv = document.getElementById('input-masv').value.trim().toUpperCase();
-  const sta = document.getElementById('login-status');
-  const btn = document.getElementById('login-btn');
-  
-  if (!masv) { sta.textContent = '⚠ Vui lòng nhập Mã SV'; return; }
-  
-  // Bỏ qua kiểm tra nếu nhập ADMIN
-  if(masv === 'ADMIN') { launchApp('ADMIN', 'Quản Trị Viên'); return; }
+  const btn  = document.getElementById('login-btn');
+  const sta  = document.getElementById('login-status');
+  const txt  = document.getElementById('btn-text');
 
-  btn.textContent = 'Đang kiểm tra...';
-  const students = await fetchValidStudents();
-  
-  if (students === null) {
-    sta.textContent = '❌ Lỗi mạng. Hãy up file lên host.';
-    btn.textContent = 'Vào Lớp Học'; return;
-  }
-  
-  if (!students[masv]) {
-    sta.textContent = `❌ Mã "${masv}" không tồn tại!`;
-    btn.textContent = 'Vào Lớp Học'; return;
+  sta.className = 'login-status';
+  sta.textContent = '';
+
+  if (!masv) {
+    sta.className = 'login-status error';
+    sta.textContent = '⚠ Vui lòng nhập Mã Sinh Viên';
+    return;
   }
 
-  // Lấy tên từ Google Sheet dựa vào Mã SV
-  const studentName = students[masv];
-  
-  sessionStorage.setItem('dsa_masv', masv);
-  sessionStorage.setItem('dsa_name', studentName);
-  launchApp(masv, studentName);
+  // --- BACKDOOR CHO ADMIN ---
+  if (masv === 'ADMIN') {
+    sta.className = 'login-status success';
+    sta.textContent = '✓ Chế độ Quản trị!';
+    setTimeout(() => { launchApp('ADMIN', 'Quản Trị Viên'); }, 500);
+    return;
+  }
+
+  try {
+    btn.disabled = true;
+    txt.innerHTML = '<span class="spinner"></span> Đang xác thực...';
+    sta.className = 'login-status loading';
+    sta.textContent = 'Đang tra cứu dữ liệu...';
+
+    const students = await fetchValidStudents();
+
+    if (students === null) {
+      sta.className = 'login-status error';
+      sta.textContent = '❌ Lỗi mạng. Hãy đảm bảo bạn đang chạy trên Live Server hoặc Web Host.';
+      btn.disabled = false;
+      txt.textContent = 'Vào Lớp Học';
+      return;
+    }
+
+    if (!students[masv]) {
+      sta.className = 'login-status error';
+      sta.textContent = `❌ Mã sinh viên "${masv}" không có trong hệ thống!`;
+      btn.disabled = false;
+      txt.textContent = 'Vào Lớp Học';
+      return;
+    }
+
+    sta.className = 'login-status success';
+    sta.textContent = '✓ Xác thực thành công!';
+    
+    const studentName = students[masv];
+
+    setTimeout(() => {
+      sessionStorage.setItem('dsa_masv', masv);
+      sessionStorage.setItem('dsa_name', studentName); 
+      launchApp(masv, studentName);
+    }, 800);
+
+  } catch (error) {
+    sta.className = 'login-status error';
+    sta.textContent = '❌ Lỗi: ' + error.message;
+    btn.disabled = false;
+    txt.textContent = 'Vào Lớp Học';
+  }
 }
 
+// ================================================================
+// QUẢN LÝ GIAO DIỆN CHÍNH & COZE BOT
+// ================================================================
 function launchApp(masv, name) {
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-container').style.display = 'flex';
+
   document.getElementById('display-name').textContent = name;
   document.getElementById('display-masv').textContent = masv;
+  document.getElementById('welcome-name').textContent = name;
 
-  // THỦ THUẬT XÓA SẠCH LỊCH SỬ 100%: Nối thêm timestamp vào ID sinh viên
-  // Ví dụ: SV01_171456... Coze sẽ coi đây là người mới hoàn toàn
+  // GIẢI QUYẾT TRIỆT ĐỂ LỊCH SỬ COZE
+  // 1. Gắn mã thời gian vào User ID
   const uniqueSessionId = masv + "___" + Date.now();
+  // 2. Ép tạo Conversation ID mới hoàn toàn
+  const newConversationId = "conv_" + Date.now();
 
   new CozeWebSDK.WebChatClient({
     config: { bot_id: COZE_BOT_ID },
-    componentProps: { title: 'Trợ lý Chấm Code', layout: 'pc' },
+    componentProps: { 
+      title: 'Trợ lý Chấm Code',
+      conversation_id: newConversationId // Lệnh này ép Coze tạo cuộc hội thoại mới
+    },
     userInfo: { 
-      id: uniqueSessionId, // Gửi ID độc nhất này lên Coze
+      id: uniqueSessionId, 
       nickname: name 
     },
-    auth: { type: 'token', token: COZE_TOKEN, onRefreshToken: () => COZE_TOKEN }
+    auth: {
+      type: 'token',
+      token: COZE_TOKEN, 
+      onRefreshToken: () => COZE_TOKEN
+    }
   });
 }
 
 function handleLogout() {
-  sessionStorage.clear();
-  window.location.reload();
+  if (confirm('Bạn có chắc muốn đăng xuất? Lịch sử Chat sẽ bị xóa.')) {
+    sessionStorage.clear();
+    // Lệnh này cực kỳ quan trọng để xóa sạch Cache của Coze lưu trong trình duyệt
+    localStorage.clear(); 
+    window.location.reload();
+  }
+}
+
+// ================================================================
+// LOGIC CHUYỂN TRANG
+// ================================================================
+const chapterData = {
+  1: { title: "Chương 1: Thiết kế và phân tích giải thuật", desc: "Nắm vững phương pháp đánh giá hiệu suất.", pdf: "https://docs.google.com/document/d/1WC2VmOU_jhVfGzH_mPsQhozCDDXSFCbfpHYIBfULr2o/edit", topics: [ { name: "Độ phức tạp thuật toán", detail: "Phân tích Big O" }, { name: "Chiến lược thiết kế", detail: "Chia để trị, Tham lam, Quy hoạch động" } ] },
+  2: { title: "Chương 2: Các kiểu dữ liệu cơ sở", desc: "Hệ thống hóa các kiểu dữ liệu nền tảng.", pdf: "https://docs.google.com/document/d/1eky8_mvFQfTl8kvt3pg9fDeR5Hhq1jsEz5RQrWVt7-M/edit", topics: [ { name: "Kiểu dữ liệu trừu tượng", detail: "Định nghĩa ADT" }, { name: "Con trỏ & Bộ nhớ", detail: "Quản lý cấp phát động" } ] },
+  3: { title: "Chương 3: Mảng, danh sách", desc: "Tổ chức dữ liệu tuyến tính.", pdf: "https://docs.google.com/document/d/1W845YWZlPpKLogb_ECmsXSQoMqcrpfh4IhuZ-Xv7tZA/edit", topics: [ { name: "Cấu trúc Danh sách", detail: "Array và Linked List" }, { name: "Ngăn xếp & Hàng đợi", detail: "LIFO/FIFO" } ] },
+  4: { title: "Chương 4: Cây (Tree)", desc: "Cấu trúc dữ liệu phân cấp.", pdf: "https://docs.google.com/document/d/1j39PD2vDIkuzNDe6FK_AntIUSlUjttELZmeWXANeO1k/edit", topics: [ { name: "Cây nhị phân", detail: "Duyệt cây: Tiền tự, trung tự, hậu tự." }, { name: "Cây tìm kiếm nhị phân", detail: "Tối ưu hóa tốc độ tìm kiếm" } ] },
+  5: { title: "Chương 5: Sắp xếp (Sorting)", desc: "Các kỹ thuật sắp xếp phổ biến.", pdf: "https://docs.google.com/document/d/1jDSv-XYq1l0iwsA-T-P9aFZy6nSn9zbMwjplUAewsoo/edit", topics: [ { name: "Sắp xếp đơn giản", detail: "Đổi chỗ, Chèn, Lựa chọn." }, { name: "Sắp xếp nâng cao", detail: "Quick Sort, Merge Sort" } ] },
+  6: { title: "Chương 6: Tìm kiếm (Searching)", desc: "Truy xuất dữ liệu hiệu quả.", pdf: "https://docs.google.com/document/d/1txFeyednVsiMHqkbvG3WuHn4GejBETI_QaD24w1rxYY/edit", topics: [ { name: "Tìm kiếm tuyến tính", detail: "Danh sách chưa có thứ tự." }, { name: "Tìm kiếm nhị phân", detail: "Danh sách đã sắp xếp." } ] }
+};
+
+function showPage(pageId, btn) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById(pageId).classList.add('active');
+  if(btn) btn.classList.add('active');
+}
+
+function toggleSubMenu(btn) {
+  const sub = document.getElementById('sub-chapters');
+  sub.style.display = (sub.style.display === 'none' || sub.style.display === '') ? 'block' : 'none';
+}
+
+function loadChapter(num) {
+  const data = chapterData[num];
+  document.getElementById('ch-title').innerText = data.title;
+  document.getElementById('ch-desc').innerText = data.desc;
+  document.getElementById('pdf-link').href = data.pdf;
+  
+  let html = "";
+  data.topics.forEach(t => {
+    html += `<div class="topic-card"><h4>${t.name}</h4><p>${t.detail}</p></div>`;
+  });
+  document.getElementById('ch-topics').innerHTML = html;
+  showPage('lessons');
 }
 
 window.onload = function () {
   const masv = sessionStorage.getItem('dsa_masv');
   const name = sessionStorage.getItem('dsa_name');
-  if (masv && name) launchApp(masv, name);
+  if (masv && name) {
+    launchApp(masv, name);
+  }
 };
 </script>
 </body>

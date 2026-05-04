@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <title>Hệ Thống Học Tập DSA - Khoa CNTT</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"">
+  <title>Hệ Thống Học Tập Môn Cấu trúc dữ liệu và Giải thuật - Khoa CNTT</title>
   <style>
     :root { --primary: #1e293b; --accent: #10a37f; --accent-dark: #0e8c6c; --text: #f8fafc; --blue-class: #3b82f6; --orange-class: #f59e0b; }
     body { margin: 0; display: flex; height: 100vh; font-family: 'Segoe UI', Arial, sans-serif; overflow: hidden; background: #f8fafc; }
@@ -175,14 +175,14 @@
       <h1 style="border-bottom: 3px solid var(--accent); display: inline-block;">Hệ Thống Nộp Bài</h1>
       <div class="class-box" style="margin-top: 30px;">
         <div class="news-card cd">
-          <h2 style="color: var(--blue-class);">Lớp CĐ.CNT15</h2>
-          <p>Hệ Cao Đẳng - Nộp bài thực hành hàng tuần tại Classroom.</p>
+          <h2 style="color: var(--blue-class);">Hệ Cao Đẳng - Nộp bài thực hành hàng tuần tại Classroom.</h2>
+          <p>Lớp CĐ.CNT15</p>
           <a href="https://classroom.google.com/c/ODQ3NzA2MTY2Mjc2?cjc=wnxa7x6m"
              target="_blank" class="btn-class" style="background:var(--blue-class);">VÀO CLASSROOM</a>
         </div>
         <div class="news-card tc">
-          <h2 style="color: var(--orange-class);">Lớp TC.CNT25</h2>
-          <p>Hệ Trung Cấp - Nộp bài thực hành hàng tuần tại Classroom.</p>
+          <h2 style="color: var(--orange-class);">Hệ Trung Cấp - Nộp bài thực hành hàng tuần tại Classroom.</h2>
+          <p>Lớp TC.CNT25</p>
            <a href="https://classroom.google.com/c/ODQ3NzA2MTY2Mjc2?cjc=wnxa7x6m"
              target="_blank" class="btn-class" style="background:var(--orange-class);">VÀO CLASSROOM</a>
         </div>
@@ -303,7 +303,19 @@ async function handleLogin() {
 // ================================================================
 // QUẢN LÝ GIAO DIỆN CHÍNH & COZE BOT
 // ================================================================
+function clearCozeCache() {
+  // Xóa tất cả key của Coze SDK trong localStorage
+  Object.keys(localStorage)
+    .filter(k => k.toLowerCase().includes('coze') 
+             || k.toLowerCase().includes('chat')
+             || k.toLowerCase().includes('conv'))
+    .forEach(k => localStorage.removeItem(k));
+  // Xóa toàn bộ để chắc chắn
+  localStorage.clear();
+  sessionStorage.clear();
+}
 function launchApp(masv, name) {
+   clearCozeCache();
   document.getElementById('login-screen').style.display = 'none';
   document.getElementById('app-container').style.display = 'flex';
 
@@ -392,6 +404,7 @@ window.onload = function () {
   const masv = sessionStorage.getItem('dsa_masv');
   const name = sessionStorage.getItem('dsa_name');
   if (masv && name) {
+    clearCozeCache(); 
     launchApp(masv, name);
   }
 };

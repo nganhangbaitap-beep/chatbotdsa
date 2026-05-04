@@ -176,13 +176,13 @@
       <div class="class-box" style="margin-top: 30px;">
         <div class="news-card cd">
           <h2 style="color: var(--blue-class);">Hệ Cao Đẳng - Nộp bài thực hành hàng tuần tại Classroom.</h2>
-          <p>Lớp CĐ.CNT15</p>
+        
           <a href="https://classroom.google.com/c/ODQ3NzA2MTY2Mjc2?cjc=wnxa7x6m"
              target="_blank" class="btn-class" style="background:var(--blue-class);">VÀO CLASSROOM</a>
         </div>
         <div class="news-card tc">
           <h2 style="color: var(--orange-class);">Hệ Trung Cấp - Nộp bài thực hành hàng tuần tại Classroom.</h2>
-          <p>Lớp TC.CNT25</p>
+          
            <a href="https://classroom.google.com/c/ODQ3NzA2MTY2Mjc2?cjc=wnxa7x6m"
              target="_blank" class="btn-class" style="background:var(--orange-class);">VÀO CLASSROOM</a>
         </div>
@@ -323,20 +323,20 @@ function launchApp(masv, name) {
   document.getElementById('display-masv').textContent = masv;
   document.getElementById('welcome-name').textContent = name;
 
-  // GIẢI QUYẾT TRIỆT ĐỂ LỊCH SỬ COZE
-  // 1. Gắn mã thời gian vào User ID
-  const uniqueSessionId = masv + "___" + Date.now();
-  // 2. Ép tạo Conversation ID mới hoàn toàn
-  const newConversationId = "conv_" + Date.now();
+  // TẠO USER ID HOÀN TOÀN NGẪU NHIÊN MỖI LẦN ĐĂNG NHẬP
+  // Coze nhận diện lịch sử theo user_id → user_id khác = không có lịch sử
+  const randomSuffix = Math.random().toString(36).substring(2, 10);
+  const uniqueUserId = masv + "___" + Date.now() + "_" + randomSuffix;
+
+  // KHÔNG dùng conversation_id cố định — để Coze tự tạo mới hoàn toàn
 
   new CozeWebSDK.WebChatClient({
     config: { bot_id: COZE_BOT_ID },
     componentProps: { 
       title: 'Trợ lý Môn CTDL_GT',
-      conversation_id: newConversationId // Lệnh này ép Coze tạo cuộc hội thoại mới
-    },
+          },
     userInfo: { 
-      id: uniqueSessionId, 
+       id: uniqueUserId,   // ← ĐIỂM MẤU CHỐT: luôn là ID mới toanh
       nickname: name 
     },
     auth: {
@@ -348,7 +348,7 @@ function launchApp(masv, name) {
 }
 
 function handleLogout() {
-  if (confirm('Bạn có chắc muốn đăng xuất? Lịch sử Chat sẽ bị xóa.')) {
+  if (confirm('Bạn có chắc muốn đăng xuất?')) {
     localStorage.clear();
     sessionStorage.clear();
     

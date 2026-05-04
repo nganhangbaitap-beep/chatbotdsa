@@ -337,10 +337,16 @@ function launchApp(masv, name) {
 
 function handleLogout() {
   if (confirm('Bạn có chắc muốn đăng xuất? Lịch sử Chat sẽ bị xóa.')) {
+    localStorage.clear();
     sessionStorage.clear();
-    // Lệnh này cực kỳ quan trọng để xóa sạch Cache của Coze lưu trong trình duyệt
-    localStorage.clear(); 
-    window.location.reload();
+    
+    // 2. (Tùy chọn) Xóa cookie nếu trang web của bạn có lưu cookie đăng nhập
+    document.cookie.split(";").forEach(function(c) { 
+        document.cookie = c.replace(/^ +/, "").replace(/=.*/, "=;expires=" + new Date().toUTCString() + ";path=/"); 
+    });
+
+    // 3. Tải lại trang web (Hard reload) để xóa giao diện chat cũ
+    window.location.reload(true);
   }
 }
 

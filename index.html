@@ -198,8 +198,8 @@
 // CẤU HÌNH & XỬ LÝ DỮ LIỆU TỪ SHEET
 // ================================================================
 const TARGET_CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vR1ByzBIEU-JdWgBPtDQpGGvJGNvD2wz3vPo6sfRQgEaUYfQnsJHsXtlfbhVRG3lIXYernqYW6yJlPZ/pub?gid=0&single=true&output=csv';
-const COZE_BOT_ID = '7628115867796308021';
-const COZE_TOKEN  = 'pat_U0Oem7qh98IjsRetrG0OJd2JuThEFHP07tVaUqZxAAm9eULukTOghV09jypTGEdJ';
+const COZE_BOT_ID = '7635890332139470901';
+const COZE_TOKEN  = 'pat_I3ufPvAdu5sp5Pg4f7192YRgiKxrCCkyy1vbOW2jcxiFT3Uumozk0M0PZcahUnsg';
 
 async function fetchValidStudents() {
   const urlWithTime = TARGET_CSV_URL + '&t=' + Date.now();
@@ -320,7 +320,7 @@ function launchApp(masv, name) {
   new CozeWebSDK.WebChatClient({
     config: { bot_id: COZE_BOT_ID },
     componentProps: { 
-      title: 'Trợ lý Chấm Code',
+      title: 'Trợ lý Môn CTDL_GT',
       conversation_id: newConversationId // Lệnh này ép Coze tạo cuộc hội thoại mới
     },
     userInfo: { 
